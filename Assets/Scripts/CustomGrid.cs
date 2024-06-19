@@ -242,12 +242,12 @@ public class CustomGrid : MonoBehaviour
                 pieces[piece1.X, piece1.Y] = piece1;
                 pieces[piece2.X, piece2.Y] = piece2;
             }
-             
-              
-              
 
 
-            
+
+
+
+
         }
     }
 
@@ -300,10 +300,42 @@ public class CustomGrid : MonoBehaviour
                 for (int i = 0; i < horizontalPieces.Count; i++)
                 { matchingPieces.Add(horizontalPieces[i]); }
             }
+            //如果找到匹配，垂直遍历L型和T型
+            if (horizontalPieces.Count >= 3)
+            {
+                for (int i = 0; i < horizontalPieces.Count; i++)
+                {
+                    for (int dir = 0; dir <= 1; dir++)
+                    {
+                        for (int yOffset = 1; yOffset < yDim; yOffset++)
+                        {
+                            int y;
+                            if (dir == 0) { y = newY - yOffset; }//上
+                            else { y = newY + yOffset; }//下
+                            if (y < 0 || y >= yDim) { break; }
+                            if (pieces[horizontalPieces[i].X, y].IsColored() && pieces[horizontalPieces[i].X, y].ColorComponent.Color == color)
+                            {
+                                verticalPieces.Add(pieces[horizontalPieces[i].X, y]);
+                            }
+                            else { break; }
+                        }
+                    }
+                    if (verticalPieces.Count < 2) { verticalPieces.Clear(); }
+                    else
+                    {
+                        for (int j = 0; j < verticalPieces.Count; j++)
+                        {
+                            matchingPieces.Add(verticalPieces[j]);
+                        }
+                        break;
+                    }
+                }
+            }
             if (matchingPieces.Count >= 3)
             { return matchingPieces; }
-
             //获取垂直方向的相同颜色块
+            horizontalPieces.Clear();
+            verticalPieces.Clear();
             verticalPieces.Add(piece);
             for (int dir = 0; dir <= 1; dir++)
             {
@@ -324,6 +356,37 @@ public class CustomGrid : MonoBehaviour
             {
                 for (int i = 0; i < verticalPieces.Count; i++)
                 { matchingPieces.Add(verticalPieces[i]); }
+            }
+            //如果找到匹配，水平遍历L型和T型            
+            if (verticalPieces.Count >= 3)
+            {
+                for (int i = 0; i < verticalPieces.Count; i++)
+                {
+                    for (int dir = 0; dir <= 1; dir++)
+                    {
+                        for (int yOffset = 1; yOffset < yDim; yOffset++)
+                        {
+                            int x;
+                            if (dir == 0) { x = newY - yOffset; }//左
+                            else { x = newY + yOffset; }//右
+                            if (x < 0 || x >= yDim) { break; }
+                            if (pieces[x, verticalPieces[i].Y].IsColored() && pieces[x, verticalPieces[i].Y].ColorComponent.Color == color)
+                            {
+                                verticalPieces.Add(pieces[x, verticalPieces[i].Y]);
+                            }
+                            else { break; }
+                        }
+                    }
+                    if (horizontalPieces.Count < 2) { horizontalPieces.Clear(); }
+                    else
+                    {
+                        for (int j = 0; j < horizontalPieces.Count; j++)
+                        {
+                            matchingPieces.Add(horizontalPieces[j]);
+                        }
+                        break;
+                    }
+                }
             }
             if (matchingPieces.Count >= 3)
             { return matchingPieces; }
