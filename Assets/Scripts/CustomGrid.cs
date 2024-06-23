@@ -86,10 +86,16 @@ public class CustomGrid : MonoBehaviour
 
     public IEnumerator Fill()
     {
-        while (FillStep())
+        bool needsRefill = true;
+        while (needsRefill)
         {
-            inverse = !inverse;
             yield return new WaitForSeconds(fillTime);
+            while (FillStep())
+            {
+                inverse = !inverse;
+                yield return new WaitForSeconds(fillTime);
+            }
+            needsRefill = ClearAllValidMatches();
         }
     }
 
@@ -179,6 +185,7 @@ public class CustomGrid : MonoBehaviour
                 Destroy(pieceBelow.gameObject);
                 GameObject newPiece = Instantiate(piecePrefabDict[PieceType.NORMAL], GetWorldPosition(x, -1), Quaternion.identity);
                 newPiece.transform.parent = transform;
+
                 pieces[x, 0] = newPiece.GetComponent<GamePiece>();
                 pieces[x, 0].Init(x, -1, this, PieceType.NORMAL);
                 pieces[x, 0].MovableComponent.Move(x, 0, fillTime);
@@ -236,18 +243,15 @@ public class CustomGrid : MonoBehaviour
 
                 piece1.MovableComponent.Move(piece2.X, piece2.Y, fillTime);
                 piece2.MovableComponent.Move(piece1X, piece1Y, fillTime);
+
+                ClearAllValidMatches();
+                StartCoroutine(Fill());
             }
             else
             {
                 pieces[piece1.X, piece1.Y] = piece1;
                 pieces[piece2.X, piece2.Y] = piece2;
             }
-
-
-
-
-
-
         }
     }
 
@@ -364,15 +368,15 @@ public class CustomGrid : MonoBehaviour
                 {
                     for (int dir = 0; dir <= 1; dir++)
                     {
-                        for (int yOffset = 1; yOffset < yDim; yOffset++)
+                        for (int xOffset = 1; xOffset < yDim; xOffset++)
                         {
                             int x;
-                            if (dir == 0) { x = newY - yOffset; }//左
-                            else { x = newY + yOffset; }//右
-                            if (x < 0 || x >= yDim) { break; }
+                            if (dir == 0) { x = newX - xOffset; }//左
+                            else { x = newX + xOffset; }//右
+                            if (x < 0 || x >= xDim) { break; }
                             if (pieces[x, verticalPieces[i].Y].IsColored() && pieces[x, verticalPieces[i].Y].ColorComponent.Color == color)
                             {
-                                verticalPieces.Add(pieces[x, verticalPieces[i].Y]);
+                                horizontalPieces.Add(pieces[x, verticalPieces[i].Y]);
                             }
                             else { break; }
                         }
@@ -395,5 +399,41 @@ public class CustomGrid : MonoBehaviour
         return null;
     }
 
+    public bool ClearAllValidMatches()
+    {
+        bool needsRefill = false;
+        for (int y = 0; y < yDim; y++)
+        {
+            for (int x = 0; x < xDim; x++)
+            {
+                if (pieces[x, y].IsClearable())
+                {
+                    List<GamePiece> match = GetMatch(pieces[x, y], x, y);
+                    if (match != null)
+                    {
+                        for (int i = 0; i < match.Count; i++)
+                        {
+                            if (ClearPiece(match[i].X, match[i].Y))
+                            {
+                                needsRefill = true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return needsRefill;
+    }
+
+    public bool ClearPiece(int x, int y)
+    {
+        if (pieces[x, y].IsClearable() && !pieces[x, y].ClearableComponent.IsBeingCleared)
+        {
+            pieces[x, y].ClearableComponent.Clear();
+            SpawnNewPiece(x, y, PieceType.EMPTY);
+            return true;
+        }
+        return false;
+    }
 
 }

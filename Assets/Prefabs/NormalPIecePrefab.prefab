@@ -97,8 +97,10 @@ GameObject:
   - component: {fileID: -1923320744655713490}
   - component: {fileID: -1161899546090518367}
   - component: {fileID: 8667933623587922432}
+  - component: {fileID: 8882889274326307345}
+  - component: {fileID: 5421982169464183714}
   m_Layer: 0
-  m_Name: GameObject
+  m_Name: NormalPIecePrefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -118,7 +120,7 @@ Transform:
   m_Children:
   - {fileID: 4044565681639526665}
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &-8846372431938122975
 MonoBehaviour:
@@ -158,7 +160,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   colorSprites:
   - color: 0
-    sprite: {fileID: -550190958, guid: cda0b0ee8e908434f999d7e00ab2beab, type: 3}
+    sprite: {fileID: -1696701969, guid: cda0b0ee8e908434f999d7e00ab2beab, type: 3}
   - color: 1
     sprite: {fileID: 1150840759, guid: cda0b0ee8e908434f999d7e00ab2beab, type: 3}
   - color: 2
@@ -214,3 +216,37 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!95 &8882889274326307345
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8567462033667493673}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 9d869385520a9424c9741654360fab9b, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &5421982169464183714
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8567462033667493673}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2bca7d9919a9dd64b850e0045ec46473, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  clearAnimation: {fileID: 7400000, guid: 9833871e85e10c14d9e7439e43e74979, type: 2}

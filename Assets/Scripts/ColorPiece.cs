@@ -54,6 +54,7 @@ public class ColorPiece : MonoBehaviour
         sprite = transform.Find("piece").GetComponent<SpriteRenderer>();
 
         colorSpriteDict = new Dictionary<ColorType, Sprite>();
+
         for (int i = 0; i < colorSprites.Length; i++)
         {
             if (!colorSpriteDict.ContainsKey(colorSprites[i].color))

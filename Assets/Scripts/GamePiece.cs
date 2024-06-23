@@ -33,10 +33,15 @@ public class GamePiece : MonoBehaviour
     private ColorPiece colorComponent;
     public ColorPiece ColorComponent { get => colorComponent; }
 
+    private ClearablePiece clearableComponent;
+    public ClearablePiece ClearableComponent { get => clearableComponent; }
+
+
     private void Awake()
     {
         movableComponent = GetComponent<MovablePiece>();
         colorComponent = GetComponent<ColorPiece>();
+        clearableComponent = GetComponent<ClearablePiece>();
     }
 
     public void Init(int _x, int _y, CustomGrid grid, CustomGrid.PieceType type)
@@ -71,6 +76,10 @@ public class GamePiece : MonoBehaviour
     public bool IsColored()
     {
         return colorComponent != null;
+    }
+    public bool IsClearable()
+    {
+        return clearableComponent != null;
     }
 
 }
