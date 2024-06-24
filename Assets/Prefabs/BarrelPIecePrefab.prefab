@@ -94,6 +94,8 @@ GameObject:
   m_Component:
   - component: {fileID: 5690681949217142196}
   - component: {fileID: 3862983257604867247}
+  - component: {fileID: 5849537446548673819}
+  - component: {fileID: 9092754937989250437}
   m_Layer: 0
   m_Name: BarrelPIecePrefab
   m_TagString: Untagged
@@ -129,3 +131,37 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 85f051126d4aa0f4ebde0e394f5aaaef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!95 &5849537446548673819
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3648849574974354597}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: aaf812d48cd5a5f4eb76c1ef37986594, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &9092754937989250437
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3648849574974354597}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2bca7d9919a9dd64b850e0045ec46473, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  clearAnimation: {fileID: 7400000, guid: be2776bd9f58fc04e8bad23e59e562a7, type: 2}
