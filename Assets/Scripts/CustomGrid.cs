@@ -12,6 +12,8 @@ public class CustomGrid : MonoBehaviour
         EMPTY,
         BARREL,
         NORMAL, // 普通类型
+        ROW_CLEAR, // 行消除类型
+        COLUMN_CLEAR, // 列消除类型
         COUNT,  // 类型数量
     }
 
@@ -86,44 +88,43 @@ public class CustomGrid : MonoBehaviour
 
     public IEnumerator Fill()
     {
-        bool needsRefill = true;
-        while (needsRefill)
+        bool needsRefill = true; // 是否需要重新填充的标志
+        while (needsRefill) // 如果需要重新填充，则继续循环
         {
-            yield return new WaitForSeconds(fillTime);
-            while (FillStep())
+            yield return new WaitForSeconds(fillTime); // 等待一段时间
+            while (FillStep()) // 执行填充步骤，直到没有块移动
             {
-                inverse = !inverse;
-                yield return new WaitForSeconds(fillTime);
+                inverse = !inverse; // 切换方向标志
+                yield return new WaitForSeconds(fillTime); // 等待一段时间
             }
-            needsRefill = ClearAllValidMatches();
+            needsRefill = ClearAllValidMatches(); // 清除所有有效的匹配，并检查是否需要重新填充
         }
     }
 
     public bool FillStep()
     {
-        bool movedPiece = false;
-        for (int y = yDim - 2; y >= 0; y--)
+        bool movedPiece = false; // 是否有块移动的标志
+        for (int y = yDim - 2; y >= 0; y--) // 从倒数第二行开始向上遍历
         {
-            for (int loopX = 0; loopX < xDim; loopX++)
+            for (int loopX = 0; loopX < xDim; loopX++) // 遍历每一列
             {
                 int x = loopX;
-                if (inverse)
+                if (inverse) // 如果方向标志为true，则反向遍历
                 {
                     x = xDim - 1 - loopX;
                 }
 
-                GamePiece piece = pieces[x, y];
-                if (piece.IsMovable())
+                GamePiece piece = pieces[x, y]; // 获取当前块
+                if (piece.IsMovable()) // 如果当前块可移动
                 {
-                    GamePiece pieceBelow = pieces[x, y + 1];
-                    if (pieceBelow.Type == PieceType.EMPTY)
+                    GamePiece pieceBelow = pieces[x, y + 1]; // 获取下方的块
+                    if (pieceBelow.Type == PieceType.EMPTY) // 如果下方块为空
                     {
-
-                        Destroy(pieceBelow.gameObject);
-                        piece.MovableComponent.Move(x, y + 1, fillTime);
-                        pieces[x, y + 1] = piece;
-                        SpawnNewPiece(x, y, PieceType.EMPTY);
-                        movedPiece = true;
+                        Destroy(pieceBelow.gameObject); // 销毁下方块
+                        piece.MovableComponent.Move(x, y + 1, fillTime); // 移动当前块到下方
+                        pieces[x, y + 1] = piece; // 更新块的位置
+                        SpawnNewPiece(x, y, PieceType.EMPTY); // 在当前位置生成新的空块
+                        movedPiece = true; // 标记有块移动
                     }
                     else // 如果下方块不为空，检查旁边是否有空位
                     {
@@ -132,7 +133,7 @@ public class CustomGrid : MonoBehaviour
                             if (diag != 0) // 不检查当前列
                             {
                                 int diagX = x + diag;
-                                if (inverse) // 如果inverse为true，则反向计算列
+                                if (inverse) // 如果方向标志为true，则反向计算列
                                 {
                                     diagX = x - diag;
                                 }
@@ -174,7 +175,6 @@ public class CustomGrid : MonoBehaviour
             }
         }
 
-
         // 处理第一行的空位
         for (int x = 0; x < xDim; x++)
         {
@@ -201,54 +201,77 @@ public class CustomGrid : MonoBehaviour
 
 
 
-    // 获取游戏世界中特定网格位置的方法
+
+
     public Vector2 GetWorldPosition(int x, int y)
     {
+        // 计算并返回游戏块在游戏世界中的位置
+        // transform.position 是当前对象的位置
+        // xDim 和 yDim 是游戏块的尺寸
+        // x 和 y 是游戏块在网格中的坐标
         return new Vector2(
-            transform.position.x - xDim / 2.0f + x,
-            transform.position.y + yDim / 2.0f - y
+            transform.position.x - xDim / 2.0f + x, // 计算游戏块的 x 坐标
+            transform.position.y + yDim / 2.0f - y  // 计算游戏块的 y 坐标
         );
     }
 
-    // 实例化新的游戏块并放置到网格中的方法
     public GamePiece SpawnNewPiece(int x, int y, PieceType type)
     {
+        // 在指定位置生成一个新的游戏块
         GameObject newPiece = Instantiate(piecePrefabDict[type], GetWorldPosition(x, y), Quaternion.identity);
-        newPiece.transform.parent = transform;
+        newPiece.transform.parent = transform; // 设置新游戏块的父对象
 
-        GamePiece pieceComponent = newPiece.GetComponent<GamePiece>();
-        pieces[x, y] = pieceComponent;
-        pieceComponent.Init(x, y, this, type);
+        GamePiece pieceComponent = newPiece.GetComponent<GamePiece>(); // 获取游戏块组件
+        pieces[x, y] = pieceComponent; // 将游戏块组件添加到游戏块数组中
+        pieceComponent.Init(x, y, this, type); // 初始化游戏块
 
-        return pieceComponent;
+        return pieceComponent; // 返回新创建的游戏块组件
     }
 
     public bool IsAdjacent(GamePiece piece1, GamePiece piece2)
     {
-        return (piece1.X == piece2.X && (int)Mathf.Abs(piece1.Y - piece2.Y) == 1)
-            || (piece1.Y == piece2.Y && (int)Mathf.Abs(piece1.X - piece2.X) == 1);
+        // 检查两个游戏块是否相邻
+        return (piece1.X == piece2.X && (int)Mathf.Abs(piece1.Y - piece2.Y) == 1) // 检查是否在同一列且相邻
+            || (piece1.Y == piece2.Y && (int)Mathf.Abs(piece1.X - piece2.X) == 1); // 检查是否在同一行且相邻
     }
 
     public void SwapPieces(GamePiece piece1, GamePiece piece2)
     {
-        if (piece1.IsMovable() && piece2.IsMovable())
+        // 交换两个游戏块的位置
+        if (piece1.IsMovable() && piece2.IsMovable()) // 检查两个游戏块是否可移动
         {
-            pieces[piece1.X, piece1.Y] = piece2;
+            pieces[piece1.X, piece1.Y] = piece2; // 更新游戏块数组中的位置
             pieces[piece2.X, piece2.Y] = piece1;
 
             if (GetMatch(piece1, piece2.X, piece2.Y) != null || GetMatch(piece2, piece1.X, piece1.Y) != null)
             {
+                // 如果交换后有匹配的游戏块
                 int piece1X = piece1.X;
                 int piece1Y = piece1.Y;
 
-                piece1.MovableComponent.Move(piece2.X, piece2.Y, fillTime);
+                piece1.MovableComponent.Move(piece2.X, piece2.Y, fillTime); // 移动游戏块
                 piece2.MovableComponent.Move(piece1X, piece1Y, fillTime);
 
-                ClearAllValidMatches();
-                StartCoroutine(Fill());
+                ClearAllValidMatches(); // 清除所有有效的匹配
+
+                
+                //如果交换的两个块是特殊的消除块，则清除掉
+                if(piece1.Type == PieceType.ROW_CLEAR||piece1.Type==PieceType.COLUMN_CLEAR)
+                {
+                    ClearPiece(piece1.X, piece1.Y); 
+                }
+                if (piece2.Type == PieceType.ROW_CLEAR || piece2.Type == PieceType.COLUMN_CLEAR)
+                {
+                    ClearPiece(piece2.X, piece2.Y); 
+                }
+
+                pressedPiece = null;// 清空按下和进入的游戏块
+                enteredPiece = null;// 清空按下和进入的游戏块
+                StartCoroutine(Fill()); // 填充游戏块
             }
             else
             {
+                // 如果没有匹配的游戏块，则恢复原来的位置
                 pieces[piece1.X, piece1.Y] = piece1;
                 pieces[piece2.X, piece2.Y] = piece2;
             }
@@ -257,54 +280,67 @@ public class CustomGrid : MonoBehaviour
 
     public void PressPiece(GamePiece piece)
     {
+        // 记录被按下的游戏块
         pressedPiece = piece;
     }
 
     public void EnterPiece(GamePiece piece)
     {
+        // 记录进入的游戏块
         enteredPiece = piece;
     }
 
     public void ReleasePiece()
     {
+        // 释放游戏块时，如果两个游戏块相邻，则交换它们的位置
         if (IsAdjacent(pressedPiece, enteredPiece))
         {
             SwapPieces(pressedPiece, enteredPiece);
         }
     }
 
+
     public List<GamePiece> GetMatch(GamePiece piece, int newX, int newY)
     {
+        // 检查游戏棋子是否是有颜色的
         if (piece.IsColored())
         {
+            // 获取棋子的颜色
             ColorPiece.ColorType color = piece.ColorComponent.Color;
+            // 初始化水平和垂直方向的棋子列表
             List<GamePiece> horizontalPieces = new List<GamePiece>();
             List<GamePiece> verticalPieces = new List<GamePiece>();
+            // 初始化匹配的棋子列表
             List<GamePiece> matchingPieces = new List<GamePiece>();
 
-            //获取水平方向的相同颜色块
+            // 将当前棋子添加到水平棋子列表中
             horizontalPieces.Add(piece);
+
+            // 检查水平方向的匹配
             for (int dir = 0; dir <= 1; dir++)
             {
                 for (int xOffset = 1; xOffset < xDim; xOffset++)
                 {
                     int x;
-                    if (dir == 0) { x = newX - xOffset; }//左
-                    else { x = newX + xOffset; }//右
-                    if (x < 0 || x >= xDim) { break; }
+                    if (dir == 0) { x = newX - xOffset; } // 向左检查
+                    else { x = newX + xOffset; } // 向右检查
+                    if (x < 0 || x >= xDim) { break; } // 超出边界则停止
                     if (pieces[x, newY].IsColored() && pieces[x, newY].ColorComponent.Color == color)
                     {
-                        horizontalPieces.Add(pieces[x, newY]);
+                        horizontalPieces.Add(pieces[x, newY]); // 添加匹配的棋子
                     }
-                    else { break; }
+                    else { break; } // 遇到不匹配的棋子则停止
                 }
             }
+
+            // 如果水平方向匹配的棋子数大于等于3，则将这些棋子添加到匹配列表中
             if (horizontalPieces.Count >= 3)
             {
                 for (int i = 0; i < horizontalPieces.Count; i++)
                 { matchingPieces.Add(horizontalPieces[i]); }
             }
-            //如果找到匹配，垂直遍历L型和T型
+
+            // 如果水平方向匹配的棋子数大于等于3，则检查垂直方向的匹配
             if (horizontalPieces.Count >= 3)
             {
                 for (int i = 0; i < horizontalPieces.Count; i++)
@@ -314,54 +350,62 @@ public class CustomGrid : MonoBehaviour
                         for (int yOffset = 1; yOffset < yDim; yOffset++)
                         {
                             int y;
-                            if (dir == 0) { y = newY - yOffset; }//上
-                            else { y = newY + yOffset; }//下
-                            if (y < 0 || y >= yDim) { break; }
+                            if (dir == 0) { y = newY - yOffset; } // 向上检查
+                            else { y = newY + yOffset; } // 向下检查
+                            if (y < 0 || y >= yDim) { break; } // 超出边界则停止
                             if (pieces[horizontalPieces[i].X, y].IsColored() && pieces[horizontalPieces[i].X, y].ColorComponent.Color == color)
                             {
-                                verticalPieces.Add(pieces[horizontalPieces[i].X, y]);
+                                verticalPieces.Add(pieces[horizontalPieces[i].X, y]); // 添加匹配的棋子
                             }
-                            else { break; }
+                            else { break; } // 遇到不匹配的棋子则停止
                         }
                     }
-                    if (verticalPieces.Count < 2) { verticalPieces.Clear(); }
+                    if (verticalPieces.Count < 2) { verticalPieces.Clear(); } // 如果垂直方向匹配的棋子数小于2，则清空列表
                     else
                     {
                         for (int j = 0; j < verticalPieces.Count; j++)
                         {
-                            matchingPieces.Add(verticalPieces[j]);
+                            matchingPieces.Add(verticalPieces[j]); // 将垂直方向匹配的棋子添加到匹配列表中
                         }
                         break;
                     }
                 }
             }
+
+            // 如果匹配的棋子数大于等于3，则返回匹配的棋子列表
             if (matchingPieces.Count >= 3)
             { return matchingPieces; }
-            //获取垂直方向的相同颜色块
+
+            // 清空水平和垂直方向的棋子列表
             horizontalPieces.Clear();
             verticalPieces.Clear();
             verticalPieces.Add(piece);
+
+            // 检查垂直方向的匹配
             for (int dir = 0; dir <= 1; dir++)
             {
                 for (int yOffset = 1; yOffset < yDim; yOffset++)
                 {
                     int y;
-                    if (dir == 0) { y = newY - yOffset; }//上
-                    else { y = newY + yOffset; }//下
-                    if (y < 0 || y >= yDim) { break; }
+                    if (dir == 0) { y = newY - yOffset; } // 向上检查
+                    else { y = newY + yOffset; } // 向下检查
+                    if (y < 0 || y >= yDim) { break; } // 超出边界则停止
                     if (pieces[newX, y].IsColored() && pieces[newX, y].ColorComponent.Color == color)
                     {
-                        verticalPieces.Add(pieces[newX, y]);
+                        verticalPieces.Add(pieces[newX, y]); // 添加匹配的棋子
                     }
-                    else { break; }
+                    else { break; } // 遇到不匹配的棋子则停止
                 }
             }
+
+            // 如果垂直方向匹配的棋子数大于等于3，则将这些棋子添加到匹配列表中
             if (verticalPieces.Count >= 3)
             {
                 for (int i = 0; i < verticalPieces.Count; i++)
                 { matchingPieces.Add(verticalPieces[i]); }
             }
-            //如果找到匹配，水平遍历L型和T型            
+
+            // 如果垂直方向匹配的棋子数大于等于3，则检查水平方向的匹配
             if (verticalPieces.Count >= 3)
             {
                 for (int i = 0; i < verticalPieces.Count; i++)
@@ -371,99 +415,198 @@ public class CustomGrid : MonoBehaviour
                         for (int xOffset = 1; xOffset < yDim; xOffset++)
                         {
                             int x;
-                            if (dir == 0) { x = newX - xOffset; }//左
-                            else { x = newX + xOffset; }//右
-                            if (x < 0 || x >= xDim) { break; }
+                            if (dir == 0) { x = newX - xOffset; } // 向左检查
+                            else { x = newX + xOffset; } // 向右检查
+                            if (x < 0 || x >= xDim) { break; } // 超出边界则停止
                             if (pieces[x, verticalPieces[i].Y].IsColored() && pieces[x, verticalPieces[i].Y].ColorComponent.Color == color)
                             {
-                                horizontalPieces.Add(pieces[x, verticalPieces[i].Y]);
+                                horizontalPieces.Add(pieces[x, verticalPieces[i].Y]); // 添加匹配的棋子
                             }
-                            else { break; }
+                            else { break; } // 遇到不匹配的棋子则停止
                         }
                     }
-                    if (horizontalPieces.Count < 2) { horizontalPieces.Clear(); }
+                    if (horizontalPieces.Count < 2) { horizontalPieces.Clear(); } // 如果水平方向匹配的棋子数小于2，则清空列表
                     else
                     {
                         for (int j = 0; j < horizontalPieces.Count; j++)
                         {
-                            matchingPieces.Add(horizontalPieces[j]);
+                            matchingPieces.Add(horizontalPieces[j]); // 将水平方向匹配的棋子添加到匹配列表中
                         }
                         break;
                     }
                 }
             }
+
+            // 如果匹配的棋子数大于等于3，则返回匹配的棋子列表
             if (matchingPieces.Count >= 3)
             { return matchingPieces; }
-
         }
-        return null;
+        return null; // 如果没有匹配的棋子，则返回null
     }
+
+
 
     public bool ClearAllValidMatches()
     {
+        // 初始化一个布尔变量，用于标记是否需要重新填充网格
         bool needsRefill = false;
+        // 遍历整个网格
         for (int y = 0; y < yDim; y++)
         {
             for (int x = 0; x < xDim; x++)
             {
+                // 检查当前位置的游戏块是否可清除
                 if (pieces[x, y].IsClearable())
                 {
+                    // 获取与当前游戏块匹配的所有游戏块
                     List<GamePiece> match = GetMatch(pieces[x, y], x, y);
+                    // 如果找到匹配的游戏块
                     if (match != null)
                     {
+                        // 定义特殊块的类型，初始值为 PieceType.COUNT
+                        PieceType specialPieceType = PieceType.COUNT;
+
+                        // 从匹配的游戏块列表中随机选择一个游戏块
+                        GamePiece randomPiece = match[Random.Range(0, match.Count)];
+
+                        // 获取随机选择的游戏块的坐标
+                        int specialPieceX = randomPiece.X;
+                        int specialPieceY = randomPiece.Y;
+
+                        // 如果匹配的游戏块数量为4
+                        if (match.Count == 4)
+                        {
+                            // 如果按下的游戏块或进入的游戏块为空
+                            if (pressedPiece == null || enteredPiece == null)
+                            {
+                                // 随机选择一种特殊块类型（行清除或列清除）
+                                specialPieceType = (PieceType)Random.Range((int)PieceType.ROW_CLEAR, (int)PieceType.COLUMN_CLEAR);
+                            }
+                            // 如果按下的游戏块和进入的游戏块在同一列
+                            else if (pressedPiece.X == enteredPiece.X)
+                            {
+                                // 设置特殊块类型为列清除
+                                specialPieceType = PieceType.COLUMN_CLEAR;
+                            }
+                            // 如果按下的游戏块和进入的游戏块在同一行
+                            else if (pressedPiece.Y == enteredPiece.Y)
+                            {
+                                // 设置特殊块类型为行清除
+                                specialPieceType = PieceType.ROW_CLEAR;
+                            }
+                        }
+
+                        // 遍历匹配的游戏块列表
                         for (int i = 0; i < match.Count; i++)
                         {
+                            // 清除匹配的游戏块，并根据清除结果更新 needsRefill
                             if (ClearPiece(match[i].X, match[i].Y))
                             {
+                                // 标记需要重新填充
                                 needsRefill = true;
+
+                                // 如果当前清除的游戏块是按下的游戏块或进入的游戏块
+                                if (match[i] == pressedPiece || match[i] == enteredPiece)
+                                {
+                                    // 更新特殊块的坐标
+                                    specialPieceX = match[i].X;
+                                    specialPieceY = match[i].Y;
+                                }
                             }
+                        }
+                        // 如果有特殊块类型，则生成特殊块
+                        if (specialPieceType != PieceType.COUNT)
+                        {
+                            Destroy(pieces[specialPieceX, specialPieceY]);// 销毁原来的特殊块
+                            GamePiece newPiece = SpawnNewPiece(specialPieceX, specialPieceY, specialPieceType);// 生成新的特殊块
+                            // 如果特殊块类型为行清除或列清除，且匹配的游戏块的颜色相同，则将特殊块的颜色设置为匹配的游戏块的颜色
+                            if ((specialPieceType == PieceType.ROW_CLEAR || specialPieceType == PieceType.COLUMN_CLEAR)
+                                 && newPiece.IsColored() && match[0].IsColored())
+                            {
+                                newPiece.ColorComponent.SetColor(match[0].ColorComponent.Color);
+
+                            }
+
                         }
                     }
                 }
             }
         }
+        // 返回是否需要重新填充网格的标志
         return needsRefill;
     }
 
-    public bool ClearPiece(int x, int y)
+
+
+
+    public bool ClearPiece(int x, int y)// 清除指定位置的游戏块
     {
+        // 检查游戏块是否可清除且未被清除
         if (pieces[x, y].IsClearable() && !pieces[x, y].ClearableComponent.IsBeingCleared)
         {
+            // 清除游戏块
             pieces[x, y].ClearableComponent.Clear();
+            // 在清除的位置生成一个新的空块
             SpawnNewPiece(x, y, PieceType.EMPTY);
-
+            // 清除周围的障碍物
             ClearObstacles(x, y);
-
+            // 返回清除成功的标志
             return true;
         }
+        // 返回清除失败的标志
         return false;
     }
-
-    public void ClearObstacles(int x, int y)
+    
+    public void ClearObstacles(int x, int y)// 清除指定位置周围的障碍物
     {
+        // 遍历指定位置周围的相邻位置
         for (int adjacentX = x - 1; adjacentX <= x + 1; adjacentX++)
         {
+            // 确保相邻位置在网格范围内且不是当前位置
             if (adjacentX != x && adjacentX >= 0 && adjacentX < xDim)
             {
+                // 检查相邻位置的游戏块是否是障碍物且可清除
                 if (pieces[adjacentX, y].Type == PieceType.BARREL && pieces[adjacentX, y].IsClearable())
                 {
+                    // 清除障碍物
                     pieces[adjacentX, y].ClearableComponent.Clear();
+                    // 在清除的位置生成一个新的空块
                     SpawnNewPiece(adjacentX, y, PieceType.EMPTY);
                 }
             }
         }
+        // 遍历指定位置周围的相邻位置
         for (int adjacentY = y - 1; adjacentY <= y + 1; adjacentY++)
         {
+            // 确保相邻位置在网格范围内且不是当前位置
             if (adjacentY != y && adjacentY >= 0 && adjacentY < yDim)
             {
+                // 检查相邻位置的游戏块是否是障碍物且可清除
                 if (pieces[x, adjacentY].Type == PieceType.BARREL && pieces[x, adjacentY].IsClearable())
                 {
+                    // 清除障碍物
                     pieces[x, adjacentY].ClearableComponent.Clear();
+                    // 在清除的位置生成一个新的空块
                     SpawnNewPiece(x, adjacentY, PieceType.EMPTY);
                 }
             }
         }
     }
-
+    public void ClearRow(int row)// 清除指定行的所有游戏块
+    {
+        // 遍历指定行的所有游戏块
+        for (int x = 0; x < xDim; x++)
+        {
+            ClearPiece(x, row);// 清除指定位置的游戏块
+        }
+    }
+    public void ClearColumn(int column)// 清除指定列的所有游戏块
+    {
+        // 遍历指定列的所有游戏块
+        for (int y = 0; y < yDim; y++)
+        {
+            ClearPiece(column, y);// 清除指定位置的游戏块
+        }
+    }
 }
 
