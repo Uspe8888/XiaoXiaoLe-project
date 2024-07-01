@@ -14,6 +14,7 @@ public class CustomGrid : MonoBehaviour
         NORMAL, // 普通类型
         ROW_CLEAR, // 行消除类型
         COLUMN_CLEAR, // 列消除类型
+        RAINBOW, // 彩虹类型
         COUNT,  // 类型数量
     }
 
@@ -201,7 +202,7 @@ public class CustomGrid : MonoBehaviour
 
 
 
-
+    public float interval = 0.2f;
 
     public Vector2 GetWorldPosition(int x, int y)
     {
@@ -210,8 +211,8 @@ public class CustomGrid : MonoBehaviour
         // xDim 和 yDim 是游戏块的尺寸
         // x 和 y 是游戏块在网格中的坐标
         return new Vector2(
-            transform.position.x - xDim / 2.0f + x, // 计算游戏块的 x 坐标
-            transform.position.y + yDim / 2.0f - y  // 计算游戏块的 y 坐标
+            transform.position.x - xDim / 2.0f + x + (x * interval), // 计算游戏块的 x 坐标
+            transform.position.y + yDim / 2.0f - y - (y * interval)  // 计算游戏块的 y 坐标
         );
     }
 
@@ -243,7 +244,8 @@ public class CustomGrid : MonoBehaviour
             pieces[piece1.X, piece1.Y] = piece2; // 更新游戏块数组中的位置
             pieces[piece2.X, piece2.Y] = piece1;
 
-            if (GetMatch(piece1, piece2.X, piece2.Y) != null || GetMatch(piece2, piece1.X, piece1.Y) != null)
+            if (GetMatch(piece1, piece2.X, piece2.Y) != null || GetMatch(piece2, piece1.X, piece1.Y) != null
+               || piece1.Type == PieceType.RAINBOW || piece2.Type == PieceType.RAINBOW)
             {
                 // 如果交换后有匹配的游戏块
                 int piece1X = piece1.X;
@@ -252,17 +254,36 @@ public class CustomGrid : MonoBehaviour
                 piece1.MovableComponent.Move(piece2.X, piece2.Y, fillTime); // 移动游戏块
                 piece2.MovableComponent.Move(piece1X, piece1Y, fillTime);
 
+                if (piece1.Type == PieceType.RAINBOW && piece1.IsClearable() && piece2.IsColored())//如果交换的两个块是彩虹消除块
+                {
+                    ClearColorPiece clearColor = piece1.GetComponent<ClearColorPiece>();
+                    if (clearColor)
+                    {
+                        clearColor.Color = piece2.ColorComponent.Color;
+                    }
+                    ClearPiece(piece1.X, piece1.Y);
+                }
+                if (piece2.Type == PieceType.RAINBOW && piece2.IsClearable() && piece1.IsColored())//如果交换的两个块是彩虹消除块
+                {
+                    ClearColorPiece clearColor = piece2.GetComponent<ClearColorPiece>();
+                    if (clearColor)
+                    {
+                        clearColor.Color = piece1.ColorComponent.Color;
+                    }
+                    ClearPiece(piece2.X, piece2.Y);
+                }
+
                 ClearAllValidMatches(); // 清除所有有效的匹配
 
-                
+
                 //如果交换的两个块是特殊的消除块，则清除掉
-                if(piece1.Type == PieceType.ROW_CLEAR||piece1.Type==PieceType.COLUMN_CLEAR)
+                if (piece1.Type == PieceType.ROW_CLEAR || piece1.Type == PieceType.COLUMN_CLEAR)
                 {
-                    ClearPiece(piece1.X, piece1.Y); 
+                    ClearPiece(piece1.X, piece1.Y);
                 }
                 if (piece2.Type == PieceType.ROW_CLEAR || piece2.Type == PieceType.COLUMN_CLEAR)
                 {
-                    ClearPiece(piece2.X, piece2.Y); 
+                    ClearPiece(piece2.X, piece2.Y);
                 }
 
                 pressedPiece = null;// 清空按下和进入的游戏块
@@ -446,7 +467,7 @@ public class CustomGrid : MonoBehaviour
 
 
 
-    public bool ClearAllValidMatches()
+    public bool ClearAllValidMatches()// 清除所有有效的匹配
     {
         // 初始化一个布尔变量，用于标记是否需要重新填充网格
         bool needsRefill = false;
@@ -495,6 +516,11 @@ public class CustomGrid : MonoBehaviour
                                 specialPieceType = PieceType.ROW_CLEAR;
                             }
                         }
+                        else if (match.Count == 5)
+                        {
+                            specialPieceType = PieceType.RAINBOW;
+                        }
+
 
                         // 遍历匹配的游戏块列表
                         for (int i = 0; i < match.Count; i++)
@@ -526,7 +552,10 @@ public class CustomGrid : MonoBehaviour
                                 newPiece.ColorComponent.SetColor(match[0].ColorComponent.Color);
 
                             }
-
+                            else if (specialPieceType == PieceType.RAINBOW && newPiece.IsColored())
+                            {
+                                newPiece.ColorComponent.SetColor(ColorPiece.ColorType.ANY);
+                            }
                         }
                     }
                 }
@@ -556,7 +585,7 @@ public class CustomGrid : MonoBehaviour
         // 返回清除失败的标志
         return false;
     }
-    
+
     public void ClearObstacles(int x, int y)// 清除指定位置周围的障碍物
     {
         // 遍历指定位置周围的相邻位置
@@ -608,5 +637,25 @@ public class CustomGrid : MonoBehaviour
             ClearPiece(column, y);// 清除指定位置的游戏块
         }
     }
+
+    public void ClearColor(ColorPiece.ColorType color)// 清除指定颜色的所有游戏块
+    {
+        // 遍历整个网格
+        for (int x = 0; x < xDim; x++)
+        {
+            for (int y = 0; y < yDim; y++)
+            {
+                if (pieces[x, y].IsColored() && pieces[x, y].ColorComponent.Color == color
+                    || color == ColorPiece.ColorType.ANY)
+                {
+                    ClearPiece(x, y);// 清除指定位置的游戏块
+                }
+            }
+        }
+    }
+
+
+
+
 }
 
