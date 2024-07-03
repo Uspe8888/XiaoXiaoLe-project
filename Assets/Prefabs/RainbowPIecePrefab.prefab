@@ -50,6 +50,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 85f051126d4aa0f4ebde0e394f5aaaef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  score: 1000
 --- !u!114 &3179773908236005594
 MonoBehaviour:
   m_ObjectHideFlags: 0

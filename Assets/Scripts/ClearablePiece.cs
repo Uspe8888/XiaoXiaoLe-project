@@ -7,7 +7,7 @@ using UnityEngine;
 /// </summary>
 public class ClearablePiece : MonoBehaviour
 {
-    // 清除动画片段
+    // 动画片段
     public AnimationClip clearAnimation;
     // 是否正在被清除
     private bool isBeingCleared = false;
@@ -27,6 +27,8 @@ public class ClearablePiece : MonoBehaviour
     // 清除棋子
     public virtual void Clear()// 这个方法是虚方法，子类可以重写
     {
+
+        piece.GridRef.level.OnPieceCleared(piece);
         isBeingCleared = true;
         StartCoroutine(ClearCorountine());
     }

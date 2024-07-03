@@ -31,6 +31,8 @@ public class CustomGrid : MonoBehaviour
 
     public float fillTime;
 
+    public Level level;
+
     public PiecePrefab[] piecePrefabs; // 游戏块预制体数组
 
     public GameObject backgroundPrefab; // 背景预制体
@@ -41,6 +43,8 @@ public class CustomGrid : MonoBehaviour
 
     private GamePiece pressedPiece; // 按下时的游戏块
     private GamePiece enteredPiece;
+
+    private bool gameOver = false; // 游戏是否结束
 
     private void Start() // Unity生命周期函数，当脚本实例被初始化时调用
     {
@@ -77,12 +81,22 @@ public class CustomGrid : MonoBehaviour
         }
 
         // 特殊处理某些位置的游戏块
-        Destroy(pieces[4, 4].gameObject);
-        SpawnNewPiece(4, 4, PieceType.BARREL);
-        Destroy(pieces[1, 4].gameObject);
-        SpawnNewPiece(1, 4, PieceType.BARREL);
-        Destroy(pieces[6, 4].gameObject);
-        SpawnNewPiece(6, 4, PieceType.BARREL);
+        Destroy(pieces[0, 2].gameObject);
+        SpawnNewPiece(0, 2, PieceType.BARREL);
+        Destroy(pieces[1, 2].gameObject);
+        SpawnNewPiece(1, 2, PieceType.BARREL);
+        Destroy(pieces[2, 2].gameObject);
+        SpawnNewPiece(2, 2, PieceType.BARREL);
+        Destroy(pieces[3, 2].gameObject);
+        SpawnNewPiece(3, 2, PieceType.BARREL);
+        Destroy(pieces[4, 2].gameObject);
+        SpawnNewPiece(4, 2, PieceType.BARREL);
+        Destroy(pieces[5, 2].gameObject);
+        SpawnNewPiece(5, 2, PieceType.BARREL);
+        Destroy(pieces[6, 2].gameObject);
+        SpawnNewPiece(6, 2, PieceType.BARREL);
+        Destroy(pieces[7, 2].gameObject);
+        SpawnNewPiece(7, 2, PieceType.BARREL);
 
         StartCoroutine(Fill()); // 开始填充网格的协程
     }
@@ -102,7 +116,7 @@ public class CustomGrid : MonoBehaviour
         }
     }
 
-    public bool FillStep()
+    public bool FillStep()// 执行一步填充
     {
         bool movedPiece = false; // 是否有块移动的标志
         for (int y = yDim - 2; y >= 0; y--) // 从倒数第二行开始向上遍历
@@ -238,6 +252,8 @@ public class CustomGrid : MonoBehaviour
 
     public void SwapPieces(GamePiece piece1, GamePiece piece2)
     {
+        if (gameOver) { return; }
+
         // 交换两个游戏块的位置
         if (piece1.IsMovable() && piece2.IsMovable()) // 检查两个游戏块是否可移动
         {
@@ -289,6 +305,8 @@ public class CustomGrid : MonoBehaviour
                 pressedPiece = null;// 清空按下和进入的游戏块
                 enteredPiece = null;// 清空按下和进入的游戏块
                 StartCoroutine(Fill()); // 填充游戏块
+
+                level.OnMove(); 
             }
             else
             {
@@ -545,17 +563,22 @@ public class CustomGrid : MonoBehaviour
                         {
                             Destroy(pieces[specialPieceX, specialPieceY]);// 销毁原来的特殊块
                             GamePiece newPiece = SpawnNewPiece(specialPieceX, specialPieceY, specialPieceType);// 生成新的特殊块
-                            // 如果特殊块类型为行清除或列清除，且匹配的游戏块的颜色相同，则将特殊块的颜色设置为匹配的游戏块的颜色
+
+                            // 如果特殊块类型是行清除或列清除，则设置新方块的颜色
                             if ((specialPieceType == PieceType.ROW_CLEAR || specialPieceType == PieceType.COLUMN_CLEAR)
                                  && newPiece.IsColored() && match[0].IsColored())
                             {
+                                // 设置新方块的颜色为匹配的第一个方块的颜色
                                 newPiece.ColorComponent.SetColor(match[0].ColorComponent.Color);
 
-                            }
+                            }                            
+
                             else if (specialPieceType == PieceType.RAINBOW && newPiece.IsColored())
                             {
+                                // 设置新方块的颜色为任意颜色
                                 newPiece.ColorComponent.SetColor(ColorPiece.ColorType.ANY);
                             }
+
                         }
                     }
                 }
@@ -654,7 +677,10 @@ public class CustomGrid : MonoBehaviour
         }
     }
 
-
+    public void GameOver()// 游戏结束
+    {
+        gameOver = true;
+    }
 
 
 }

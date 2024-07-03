@@ -8,6 +8,8 @@ using UnityEngine;
 /// </summary>
 public class GamePiece : MonoBehaviour
 {
+    public int score;
+
     // 游戏棋子的x坐标
     private int x;
     // 游戏棋子的y坐标
