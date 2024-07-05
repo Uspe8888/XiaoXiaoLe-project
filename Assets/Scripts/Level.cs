@@ -24,7 +24,7 @@ public class Level : MonoBehaviour
     protected LevelType type;
     public LevelType Type { get => type; }
 
-    protected int currentScore;
+    protected int currentScore;//当前分数
 
     public virtual void GameWin()
     {
@@ -35,10 +35,11 @@ public class Level : MonoBehaviour
     public virtual void GameLose()
     {
         Debug.Log("You Lose");
+        grid.GameOver();
     }
     public virtual void OnMove()
     {
-        
+       
     }
     public virtual void OnPieceCleared(GamePiece piece)
     {

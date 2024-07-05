@@ -8,7 +8,7 @@ using UnityEngine;
 /// </summary>
 public class GamePiece : MonoBehaviour
 {
-    public int score;
+    public int score;//这个棋子的分数
 
     // 游戏棋子的x坐标
     private int x;

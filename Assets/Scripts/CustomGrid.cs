@@ -25,6 +25,13 @@ public class CustomGrid : MonoBehaviour
         public PieceType type; // 游戏块类型
         public GameObject prefab; // 游戏块预制体
     }
+    [System.Serializable]
+    public struct PiecePostion
+    {
+        public PieceType type;
+        public int x;
+        public int y;
+    }
 
     public int xDim; // 网格的X维度
     public int yDim; // 网格的Y维度
@@ -34,6 +41,7 @@ public class CustomGrid : MonoBehaviour
     public Level level;
 
     public PiecePrefab[] piecePrefabs; // 游戏块预制体数组
+    public PiecePostion[] initialPieces;
 
     public GameObject backgroundPrefab; // 背景预制体
 
@@ -46,7 +54,7 @@ public class CustomGrid : MonoBehaviour
 
     private bool gameOver = false; // 游戏是否结束
 
-    private void Start() // Unity生命周期函数，当脚本实例被初始化时调用
+    private void Awake() // Unity生命周期函数，当脚本实例被初始化时调用
     {
         piecePrefabDict = new Dictionary<PieceType, GameObject>(); // 初始化字典
 
@@ -71,32 +79,27 @@ public class CustomGrid : MonoBehaviour
         }
 
         pieces = new GamePiece[xDim, yDim]; // 初始化游戏块二维数组
+
+        //生成障碍游戏块
+        for (int i = 0; i < initialPieces.Length; i++)
+        {
+            if (initialPieces[i].x >= 0 && initialPieces[i].y >= 0 && initialPieces[i].x < xDim && initialPieces[i].y < yDim)
+            {
+                SpawnNewPiece(initialPieces[i].x, initialPieces[i].y, initialPieces[i].type);
+            }
+        }
+
         // 遍历网格的X和Y维度，生成游戏块
         for (int x = 0; x < xDim; x++)
         {
             for (int y = 0; y < yDim; y++)
             {
-                SpawnNewPiece(x, y, PieceType.EMPTY);
+                if (pieces[x, y] == null)
+                {
+                    SpawnNewPiece(x, y, PieceType.EMPTY);
+                }
             }
         }
-
-        // 特殊处理某些位置的游戏块
-        Destroy(pieces[0, 2].gameObject);
-        SpawnNewPiece(0, 2, PieceType.BARREL);
-        Destroy(pieces[1, 2].gameObject);
-        SpawnNewPiece(1, 2, PieceType.BARREL);
-        Destroy(pieces[2, 2].gameObject);
-        SpawnNewPiece(2, 2, PieceType.BARREL);
-        Destroy(pieces[3, 2].gameObject);
-        SpawnNewPiece(3, 2, PieceType.BARREL);
-        Destroy(pieces[4, 2].gameObject);
-        SpawnNewPiece(4, 2, PieceType.BARREL);
-        Destroy(pieces[5, 2].gameObject);
-        SpawnNewPiece(5, 2, PieceType.BARREL);
-        Destroy(pieces[6, 2].gameObject);
-        SpawnNewPiece(6, 2, PieceType.BARREL);
-        Destroy(pieces[7, 2].gameObject);
-        SpawnNewPiece(7, 2, PieceType.BARREL);
 
         StartCoroutine(Fill()); // 开始填充网格的协程
     }
@@ -306,7 +309,7 @@ public class CustomGrid : MonoBehaviour
                 enteredPiece = null;// 清空按下和进入的游戏块
                 StartCoroutine(Fill()); // 填充游戏块
 
-                level.OnMove(); 
+                level.OnMove();
             }
             else
             {
@@ -571,7 +574,7 @@ public class CustomGrid : MonoBehaviour
                                 // 设置新方块的颜色为匹配的第一个方块的颜色
                                 newPiece.ColorComponent.SetColor(match[0].ColorComponent.Color);
 
-                            }                            
+                            }
 
                             else if (specialPieceType == PieceType.RAINBOW && newPiece.IsColored())
                             {
@@ -682,6 +685,21 @@ public class CustomGrid : MonoBehaviour
         gameOver = true;
     }
 
-
+    public List<GamePiece> GetPieceOfType(PieceType type)
+    {
+        List<GamePiece> pieceOfType = new List<GamePiece>();
+        // 遍历整个网格
+        for (int x = 0; x < xDim; x++)
+        {
+            for (int y = 0; y < yDim; y++)
+            {
+                if (pieces[x, y].Type == type)
+                {
+                    pieceOfType.Add(pieces[x, y]);
+                }
+            }
+        }
+        return pieceOfType;
+    }
 }
 

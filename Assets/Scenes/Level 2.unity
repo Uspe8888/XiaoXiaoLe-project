@@ -2164,7 +2164,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 455836876}
-  - component: {fileID: 455836875}
+  - component: {fileID: 455836877}
   m_Layer: 0
   m_Name: Level
   m_TagString: Untagged
@@ -2172,22 +2172,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &455836875
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 455836874}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 52a6f1f0bce4fa14ab7c2a94b2577514, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  grid: {fileID: 0}
-  score1Star: 0
-  score2Star: 0
-  score3Star: 0
 --- !u!4 &455836876
 Transform:
   m_ObjectHideFlags: 0
@@ -2203,6 +2187,24 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &455836877
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 455836874}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a285dabfb6575114ba600a791690f39b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  grid: {fileID: 1069365884}
+  score1Star: 25000
+  score2Star: 27000
+  score3Star: 30000
+  numMoves: 10
+  obstacleTypes: 01000000
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -2372,7 +2374,7 @@ MonoBehaviour:
   xDim: 9
   yDim: 9
   fillTime: 0.07
-  level: {fileID: 455836875}
+  level: {fileID: 455836877}
   piecePrefabs:
   - type: 0
     prefab: {fileID: 1190744255998041319, guid: 84f0b8f061753f14eaf7be31a28ccbcd, type: 3}
@@ -2386,7 +2388,46 @@ MonoBehaviour:
     prefab: {fileID: 3828203547645323916, guid: 352cb3a8e7ab83a45b548b58bb8ea30b, type: 3}
   - type: 5
     prefab: {fileID: 4791339953639525811, guid: f14f4958021593d4f9bde117a63e09e9, type: 3}
-  initialPieces: []
+  initialPieces:
+  - type: 1
+    x: 1
+    y: 1
+  - type: 1
+    x: 2
+    y: 2
+  - type: 1
+    x: 3
+    y: 3
+  - type: 1
+    x: 4
+    y: 4
+  - type: 1
+    x: 5
+    y: 5
+  - type: 1
+    x: 6
+    y: 6
+  - type: 1
+    x: 7
+    y: 1
+  - type: 1
+    x: 7
+    y: 7
+  - type: 1
+    x: 1
+    y: 7
+  - type: 1
+    x: 2
+    y: 6
+  - type: 1
+    x: 3
+    y: 5
+  - type: 1
+    x: 5
+    y: 3
+  - type: 1
+    x: 6
+    y: 2
   backgroundPrefab: {fileID: 5462641989368994548, guid: 83d36a53b29215546a528fb717a8d4a3, type: 3}
   interval: 0.05
 --- !u!4 &1069365885
