@@ -16,7 +16,14 @@ public class LevelTimer : Level
     private void Start()
     {
         type = LevelType.TIMER;
-        Debug.Log("Time" + timeInSeconds + "second.Target score:" + targetScore);
+
+        hud.SetLevelType(type);
+        hud.SetScore(currentScore);
+        hud.SetTarget(targetScore);
+        hud.SetRemaining(string.Format("{0}:{1:00}", timeInSeconds / 60, timeInSeconds % 60));
+
+
+        // Debug.Log("Time" + timeInSeconds + "second.Target score:" + targetScore);
     }
 
     private void Update()
@@ -24,12 +31,16 @@ public class LevelTimer : Level
         if (!timeOut)
         {
             timer += Time.deltaTime;
+
+            hud.SetRemaining(string.Format("{0}:{1:00}",(int)Mathf.Max((timeInSeconds-timer) / 60,0), (int)Mathf.Max(timeInSeconds-timer) % 60,0));
+            
             if (timeInSeconds - timer <= 0)
             {
                 if (currentScore >= targetScore) { GameWin(); }
                 else { GameLose(); }
+                timeOut = true;
             }
-            timeOut = true;
+            
         }
 
     }

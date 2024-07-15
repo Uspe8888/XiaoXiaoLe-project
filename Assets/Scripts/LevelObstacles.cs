@@ -23,11 +23,21 @@ public class LevelObstacles : Level
         {
             numObstaclesLeft += grid.GetPieceOfType(obstacleTypes[i]).Count;
         }
+
+        hud.SetLevelType(type);
+        hud.SetScore(currentScore);
+        hud.SetTarget(numObstaclesLeft);
+        hud.SetRemaining(numMoves);
+
+
+
     }
     public override void OnMove()
     {
         movesUsed++;
-        Debug.Log("Moves remaining;" + (numMoves - movesUsed));
+        //Debug.Log("Moves remaining;" + (numMoves - movesUsed));
+        hud.SetRemaining(numMoves - movesUsed);
+
         if (numMoves - movesUsed == 0 && numObstaclesLeft > 0)
         {
             GameLose();
@@ -43,10 +53,14 @@ public class LevelObstacles : Level
             if (obstacleTypes[i]==piece.Type)
             {
                 numObstaclesLeft--;
+
+                hud.SetTarget(numObstaclesLeft);
+
                 if(numObstaclesLeft==0)
                 {
                     currentScore += 1000 * (numMoves - movesUsed);
-                    Debug.Log("current score" + currentScore);
+                    //Debug.Log("current score" + currentScore);
+                    hud.SetScore(currentScore);
                     GameWin();
                 }
             }

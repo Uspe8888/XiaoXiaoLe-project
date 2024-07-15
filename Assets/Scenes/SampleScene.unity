@@ -2185,6 +2185,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   grid: {fileID: 0}
+  hud: {fileID: 872706658}
   score1Star: 0
   score2Star: 0
   score3Star: 0
@@ -2264,7 +2265,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 7.7
+  orthographic size: 7.151215
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -2340,6 +2341,17 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &872706658 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5318718493949411236, guid: 21b605f5e468e90439a168904d6ccf47, type: 3}
+  m_PrefabInstance: {fileID: 8617237641889601585}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a683a8f204f37664b9951aaff5be0c4e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1069365883
 GameObject:
   m_ObjectHideFlags: 0
@@ -2484,9 +2496,17 @@ PrefabInstance:
       propertyPath: level
       value: 
       objectReference: {fileID: 455836875}
+    - target: {fileID: 5322493328864689862, guid: 21b605f5e468e90439a168904d6ccf47, type: 3}
+      propertyPath: m_text
+      value: New Text
+      objectReference: {fileID: 0}
     - target: {fileID: 6056859637526603033, guid: 21b605f5e468e90439a168904d6ccf47, type: 3}
       propertyPath: m_Name
       value: Game UI Canvas
+      objectReference: {fileID: 0}
+    - target: {fileID: 6455662172470222043, guid: 21b605f5e468e90439a168904d6ccf47, type: 3}
+      propertyPath: m_text
+      value: New Text
       objectReference: {fileID: 0}
     - target: {fileID: 8821611318871370380, guid: 21b605f5e468e90439a168904d6ccf47, type: 3}
       propertyPath: m_Pivot.x

@@ -17,6 +17,8 @@ public class Level : MonoBehaviour
 
     public CustomGrid grid;
 
+    public HUD hud;
+
     public int score1Star;
     public int score2Star;
     public int score3Star;
@@ -26,15 +28,23 @@ public class Level : MonoBehaviour
 
     protected int currentScore;//当前分数
 
+
+    public  void Start()
+    {
+        hud.SetScore(currentScore);
+    }
+
     public virtual void GameWin()
     {
         Debug.Log("You Win");
+        hud.OnGameWin(currentScore);
         grid.GameOver();
     }
 
     public virtual void GameLose()
     {
         Debug.Log("You Lose");
+       hud.OnGameLose(currentScore);
         grid.GameOver();
     }
     public virtual void OnMove()
@@ -44,7 +54,8 @@ public class Level : MonoBehaviour
     public virtual void OnPieceCleared(GamePiece piece)
     {
         currentScore += piece.score;
-        Debug.Log("Current Score: " + currentScore);
+        // Debug.Log("Current Score: " + currentScore);
+        hud.SetScore(currentScore);
     }
 
 
