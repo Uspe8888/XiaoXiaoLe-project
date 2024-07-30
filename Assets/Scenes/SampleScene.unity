@@ -2496,17 +2496,9 @@ PrefabInstance:
       propertyPath: level
       value: 
       objectReference: {fileID: 455836875}
-    - target: {fileID: 5322493328864689862, guid: 21b605f5e468e90439a168904d6ccf47, type: 3}
-      propertyPath: m_text
-      value: New Text
-      objectReference: {fileID: 0}
     - target: {fileID: 6056859637526603033, guid: 21b605f5e468e90439a168904d6ccf47, type: 3}
       propertyPath: m_Name
       value: Game UI Canvas
-      objectReference: {fileID: 0}
-    - target: {fileID: 6455662172470222043, guid: 21b605f5e468e90439a168904d6ccf47, type: 3}
-      propertyPath: m_text
-      value: New Text
       objectReference: {fileID: 0}
     - target: {fileID: 8821611318871370380, guid: 21b605f5e468e90439a168904d6ccf47, type: 3}
       propertyPath: m_Pivot.x

@@ -11,6 +11,8 @@ public class HUD : MonoBehaviour
 {
     public Level level;
 
+    public GameOver gameOver;
+
     public TextMeshProUGUI remainingText;
     public TextMeshProUGUI remainingSubText;
     public TextMeshProUGUI targetText;
@@ -21,7 +23,7 @@ public class HUD : MonoBehaviour
 
 
     private int starIdx = 0;
-    private bool isGameOver = false;
+
 
     private void Start()
     {
@@ -92,10 +94,10 @@ public class HUD : MonoBehaviour
 
     public void OnGameWin(int score)
     {
-        isGameOver = true;
+        gameOver.ShowWin(score, starIdx);     
     }
     public void OnGameLose(int score)
     {
-        isGameOver = true;
+        gameOver.ShowLose();
     }
 }
