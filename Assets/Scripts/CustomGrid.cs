@@ -15,6 +15,7 @@ public class CustomGrid : MonoBehaviour
         ROW_CLEAR, // 行消除类型
         COLUMN_CLEAR, // 列消除类型
         RAINBOW, // 彩虹类型
+        BOOM,
         COUNT,  // 类型数量
     }
 
@@ -341,6 +342,7 @@ public class CustomGrid : MonoBehaviour
         }
     }
 
+    private bool isStraightMatch;
 
     public List<GamePiece> GetMatch(GamePiece piece, int newX, int newY)
     {
@@ -416,7 +418,10 @@ public class CustomGrid : MonoBehaviour
 
             // 如果匹配的棋子数大于等于3，则返回匹配的棋子列表
             if (matchingPieces.Count >= 3)
-            { return matchingPieces; }
+            {
+                isStraightMatch = horizontalPieces.Count == 5;
+                return matchingPieces;
+            }
 
             // 清空水平和垂直方向的棋子列表
             horizontalPieces.Clear();
@@ -481,8 +486,12 @@ public class CustomGrid : MonoBehaviour
 
             // 如果匹配的棋子数大于等于3，则返回匹配的棋子列表
             if (matchingPieces.Count >= 3)
-            { return matchingPieces; }
+            {
+                isStraightMatch = verticalPieces.Count == 5;
+                return matchingPieces;
+            }
         }
+        isStraightMatch = false;
         return null; // 如果没有匹配的棋子，则返回null
     }
 
@@ -539,7 +548,16 @@ public class CustomGrid : MonoBehaviour
                         }
                         else if (match.Count == 5)
                         {
-                            specialPieceType = PieceType.RAINBOW;
+                            if (isStraightMatch)
+                            {
+                                specialPieceType = PieceType.RAINBOW;
+                            }
+                            else
+                            {
+                                Debug.Log("Boom");
+                                specialPieceType = PieceType.BOOM;
+                            }
+
                         }
 
 
@@ -564,7 +582,7 @@ public class CustomGrid : MonoBehaviour
                         // 如果有特殊块类型，则生成特殊块
                         if (specialPieceType != PieceType.COUNT)
                         {
-                            Destroy(pieces[specialPieceX, specialPieceY]);// 销毁原来的特殊块
+                            Destroy(pieces[specialPieceX, specialPieceY]);// 销毁原来的块
                             GamePiece newPiece = SpawnNewPiece(specialPieceX, specialPieceY, specialPieceType);// 生成新的特殊块
 
                             // 如果特殊块类型是行清除或列清除，则设置新方块的颜色
@@ -582,6 +600,10 @@ public class CustomGrid : MonoBehaviour
                                 newPiece.ColorComponent.SetColor(ColorPiece.ColorType.ANY);
                             }
 
+                            else if (specialPieceType == PieceType.BOOM && newPiece.IsColored())
+                            {
+                                newPiece.ColorComponent.SetColor(match[0].ColorComponent.Color);
+                            }
                         }
                     }
                 }
@@ -679,6 +701,40 @@ public class CustomGrid : MonoBehaviour
             }
         }
     }
+
+    public void BoomClear(int x, int y)
+    {
+        // 清除当前方块
+        ClearPiece(x, y);
+
+        // 清除上方方块
+        if (y + 1 < yDim)
+        {
+            ClearPiece(x, y + 1);
+        }
+
+        // 清除下方方块
+        if (y - 1 >= 0)
+        {
+            ClearPiece(x, y - 1);
+        }
+
+        // 清除右方方块
+        if (x + 1 < xDim)
+        {
+            ClearPiece(x + 1, y);
+        }
+
+        // 清除左方方块
+        if (x - 1 >= 0)
+        {
+            ClearPiece(x - 1, y);
+        }
+    }
+
+
+
+
 
     public void GameOver()// 游戏结束
     {

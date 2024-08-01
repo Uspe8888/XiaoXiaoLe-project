@@ -17,7 +17,7 @@ public class ColorPiece : MonoBehaviour
         GREEN,
         BLUE,
         PINK,
-        ANY,
+        ANY,        
         COUNT
     }
 

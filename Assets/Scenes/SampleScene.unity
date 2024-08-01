@@ -2171,7 +2171,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &455836875
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2202,7 +2202,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &519420028
 GameObject:
@@ -2398,6 +2398,10 @@ MonoBehaviour:
     prefab: {fileID: 3828203547645323916, guid: 352cb3a8e7ab83a45b548b58bb8ea30b, type: 3}
   - type: 5
     prefab: {fileID: 4791339953639525811, guid: f14f4958021593d4f9bde117a63e09e9, type: 3}
+  - type: 5
+    prefab: {fileID: 4791339953639525811, guid: f14f4958021593d4f9bde117a63e09e9, type: 3}
+  - type: 6
+    prefab: {fileID: 8813699427546453624, guid: 5480f364193aa1740a98bb1966dc0fc6, type: 3}
   initialPieces: []
   backgroundPrefab: {fileID: 5462641989368994548, guid: 83d36a53b29215546a528fb717a8d4a3, type: 3}
   interval: 0.05
@@ -2433,7 +2437,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1475242433
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2500,6 +2504,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Game UI Canvas
       objectReference: {fileID: 0}
+    - target: {fileID: 6056859637526603033, guid: 21b605f5e468e90439a168904d6ccf47, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8821611318871370380, guid: 21b605f5e468e90439a168904d6ccf47, type: 3}
       propertyPath: m_Pivot.x
       value: 0
@@ -2510,7 +2518,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8821611318871370380, guid: 21b605f5e468e90439a168904d6ccf47, type: 3}
       propertyPath: m_RootOrder
-      value: 4
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 8821611318871370380, guid: 21b605f5e468e90439a168904d6ccf47, type: 3}
       propertyPath: m_AnchorMax.x
