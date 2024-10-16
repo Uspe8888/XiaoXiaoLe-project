@@ -15,7 +15,7 @@ public class CustomGrid : MonoBehaviour
         ROW_CLEAR, // 行消除类型
         COLUMN_CLEAR, // 列消除类型
         RAINBOW, // 彩虹类型
-        BOOM,
+        BOOM,    //炸弹类型
         COUNT,  // 类型数量
     }
 
@@ -546,7 +546,7 @@ public class CustomGrid : MonoBehaviour
                                 specialPieceType = PieceType.ROW_CLEAR;
                             }
                         }
-                        else if (match.Count == 5)
+                        else if (match.Count >= 5)
                         {
                             if (isStraightMatch)
                             {
@@ -707,31 +707,23 @@ public class CustomGrid : MonoBehaviour
         // 清除当前方块
         ClearPiece(x, y);
 
-        // 清除上方方块
-        if (y + 1 < yDim)
-        {
-            ClearPiece(x, y + 1);
-        }
+        // 定义周围的八个方向
+        int[] dx = { -1, 1, 0, 0, -1, -1, 1, 1 };
+        int[] dy = { 0, 0, -1, 1, -1, 1, -1, 1 };
 
-        // 清除下方方块
-        if (y - 1 >= 0)
+        // 遍历周围的八个方向
+        for (int i = 0; i < 8; i++)
         {
-            ClearPiece(x, y - 1);
-        }
+            int newX = x + dx[i];
+            int newY = y + dy[i];
 
-        // 清除右方方块
-        if (x + 1 < xDim)
-        {
-            ClearPiece(x + 1, y);
-        }
-
-        // 清除左方方块
-        if (x - 1 >= 0)
-        {
-            ClearPiece(x - 1, y);
+            // 检查新位置是否在网格范围内
+            if (newX >= 0 && newX < xDim && newY >= 0 && newY < yDim)
+            {
+                ClearPiece(newX, newY);
+            }
         }
     }
-
 
 
 

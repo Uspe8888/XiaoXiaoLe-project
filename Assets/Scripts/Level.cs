@@ -29,7 +29,7 @@ public class Level : MonoBehaviour
     protected int currentScore;//当前分数
 
 
-    public  void Start()
+    public void Start()
     {
         hud.SetScore(currentScore);
     }
@@ -44,12 +44,12 @@ public class Level : MonoBehaviour
     public virtual void GameLose()
     {
         Debug.Log("You Lose");
-       hud.OnGameLose(currentScore);
+        hud.OnGameLose(currentScore);
         grid.GameOver();
     }
     public virtual void OnMove()
     {
-       
+
     }
     public virtual void OnPieceCleared(GamePiece piece)
     {
