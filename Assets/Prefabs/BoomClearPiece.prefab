@@ -165,9 +165,9 @@ MonoBehaviour:
   - color: 1
     sprite: {fileID: 1150840759, guid: cda0b0ee8e908434f999d7e00ab2beab, type: 3}
   - color: 2
-    sprite: {fileID: -1012420749, guid: cda0b0ee8e908434f999d7e00ab2beab, type: 3}
+    sprite: {fileID: 331965807, guid: cda0b0ee8e908434f999d7e00ab2beab, type: 3}
   - color: 3
-    sprite: {fileID: 32289572, guid: cda0b0ee8e908434f999d7e00ab2beab, type: 3}
+    sprite: {fileID: -550190958, guid: cda0b0ee8e908434f999d7e00ab2beab, type: 3}
   - color: 4
     sprite: {fileID: -1768528513, guid: cda0b0ee8e908434f999d7e00ab2beab, type: 3}
   - color: 5

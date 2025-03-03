@@ -2457,6 +2457,8 @@ MonoBehaviour:
     prefab: {fileID: 3828203547645323916, guid: 352cb3a8e7ab83a45b548b58bb8ea30b, type: 3}
   - type: 5
     prefab: {fileID: 4791339953639525811, guid: f14f4958021593d4f9bde117a63e09e9, type: 3}
+  - type: 6
+    prefab: {fileID: 8813699427546453624, guid: 5480f364193aa1740a98bb1966dc0fc6, type: 3}
   initialPieces: []
   backgroundPrefab: {fileID: 5462641989368994548, guid: 83d36a53b29215546a528fb717a8d4a3, type: 3}
   interval: 0.05

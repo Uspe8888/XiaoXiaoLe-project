@@ -25,6 +25,7 @@ public class ClearablePiece : MonoBehaviour
     }
 
     // 清除棋子
+    // ReSharper disable Unity.PerformanceAnalysis
     public virtual void Clear()// 这个方法是虚方法，子类可以重写
     {
 

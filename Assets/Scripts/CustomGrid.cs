@@ -499,6 +499,8 @@ public class CustomGrid : MonoBehaviour
 
     public bool ClearAllValidMatches()// 清除所有有效的匹配
     {
+        isHeroSpawned = false;// 重置英雄生成标志
+
         // 初始化一个布尔变量，用于标记是否需要重新填充网格
         bool needsRefill = false;
         // 遍历整个网格
@@ -609,32 +611,46 @@ public class CustomGrid : MonoBehaviour
                 }
             }
         }
+       
         // 返回是否需要重新填充网格的标志
         return needsRefill;
     }
 
 
+    public HeroHome hero;
+    private bool isHeroSpawned = false;// 标志是否已经生成英雄
 
-
+    // ReSharper disable Unity.PerformanceAnalysis
     public bool ClearPiece(int x, int y)// 清除指定位置的游戏块
     {
         // 检查游戏块是否可清除且未被清除
         if (pieces[x, y].IsClearable() && !pieces[x, y].ClearableComponent.IsBeingCleared)
         {
+
+            // if (!isHeroSpawned)// 如果英雄还没有生成
+            // {
+            //     ColorPiece.ColorType color = pieces[x, y].ColorComponent.Color;
+            //     hero.spawnHero(color); // 只在此处生成一次
+            //     isHeroSpawned = true; // 设置标志为true
+            // }
+
+
             // 清除游戏块
             pieces[x, y].ClearableComponent.Clear();
             // 在清除的位置生成一个新的空块
             SpawnNewPiece(x, y, PieceType.EMPTY);
             // 清除周围的障碍物
             ClearObstacles(x, y);
-            // 返回清除成功的标志
+
+            // 返回清除成功的标志    
             return true;
+
         }
         // 返回清除失败的标志
         return false;
     }
 
-    public void ClearObstacles(int x, int y)// 清除指定位置周围的障碍物
+    private void ClearObstacles(int x, int y)// 清除指定位置周围的障碍物
     {
         // 遍历指定位置周围的相邻位置
         for (int adjacentX = x - 1; adjacentX <= x + 1; adjacentX++)
