@@ -15,8 +15,8 @@ public class CustomGrid : MonoBehaviour
         ROW_CLEAR, // 行消除类型
         COLUMN_CLEAR, // 列消除类型
         RAINBOW, // 彩虹类型
-        BOOM,    //炸弹类型
-        COUNT,  // 类型数量
+        BOOM, //炸弹类型
+        COUNT, // 类型数量
     }
 
     // 使结构体可以在Unity编辑器中序列化显示
@@ -26,6 +26,7 @@ public class CustomGrid : MonoBehaviour
         public PieceType type; // 游戏块类型
         public GameObject prefab; // 游戏块预制体
     }
+
     [System.Serializable]
     public struct PiecePostion
     {
@@ -55,54 +56,59 @@ public class CustomGrid : MonoBehaviour
 
     private bool gameOver = false; // 游戏是否结束
 
-    private void Awake() // Unity生命周期函数，当脚本实例被初始化时调用
+    private bool startClear = false;
+
+    public void ClearAwake() // Unity生命周期函数，当脚本实例被初始化时调用
     {
-        piecePrefabDict = new Dictionary<PieceType, GameObject>(); // 初始化字典
+        
+            piecePrefabDict = new Dictionary<PieceType, GameObject>(); // 初始化字典
 
-        // 遍历游戏块预制体数组，将预制体添加到字典中
-        for (int i = 0; i < piecePrefabs.Length; i++)
-        {
-            if (!piecePrefabDict.ContainsKey(piecePrefabs[i].type)) // 如果字典中不存在当前类型
+            // 遍历游戏块预制体数组，将预制体添加到字典中
+            for (int i = 0; i < piecePrefabs.Length; i++)
             {
-                piecePrefabDict.Add(piecePrefabs[i].type, piecePrefabs[i].prefab); // 添加到字典
-            }
-        }
-
-        // 遍历网格的X和Y维度，生成背景
-        for (int x = 0; x < xDim; x++)
-        {
-            for (int y = 0; y < yDim; y++)
-            {
-                // 实例化背景预制体，设置位置和旋转，并设置父对象为当前游戏对象
-                GameObject background = Instantiate(backgroundPrefab, GetWorldPosition(x, y), Quaternion.identity);
-                background.transform.parent = transform;
-            }
-        }
-
-        pieces = new GamePiece[xDim, yDim]; // 初始化游戏块二维数组
-
-        //生成障碍游戏块
-        for (int i = 0; i < initialPieces.Length; i++)
-        {
-            if (initialPieces[i].x >= 0 && initialPieces[i].y >= 0 && initialPieces[i].x < xDim && initialPieces[i].y < yDim)
-            {
-                SpawnNewPiece(initialPieces[i].x, initialPieces[i].y, initialPieces[i].type);
-            }
-        }
-
-        // 遍历网格的X和Y维度，生成游戏块
-        for (int x = 0; x < xDim; x++)
-        {
-            for (int y = 0; y < yDim; y++)
-            {
-                if (pieces[x, y] == null)
+                if (!piecePrefabDict.ContainsKey(piecePrefabs[i].type)) // 如果字典中不存在当前类型
                 {
-                    SpawnNewPiece(x, y, PieceType.EMPTY);
+                    piecePrefabDict.Add(piecePrefabs[i].type, piecePrefabs[i].prefab); // 添加到字典
                 }
             }
-        }
 
-        StartCoroutine(Fill()); // 开始填充网格的协程
+            // 遍历网格的X和Y维度，生成背景
+            for (int x = 0; x < xDim; x++)
+            {
+                for (int y = 0; y < yDim; y++)
+                {
+                    // 实例化背景预制体，设置位置和旋转，并设置父对象为当前游戏对象
+                    GameObject background = Instantiate(backgroundPrefab, GetWorldPosition(x, y), Quaternion.identity);
+                    background.transform.parent = transform;
+                }
+            }
+
+            pieces = new GamePiece[xDim, yDim]; // 初始化游戏块二维数组
+
+            //生成障碍游戏块
+            for (int i = 0; i < initialPieces.Length; i++)
+            {
+                if (initialPieces[i].x >= 0 && initialPieces[i].y >= 0 && initialPieces[i].x < xDim &&
+                    initialPieces[i].y < yDim)
+                {
+                    SpawnNewPiece(initialPieces[i].x, initialPieces[i].y, initialPieces[i].type);
+                }
+            }
+
+            // 遍历网格的X和Y维度，生成游戏块
+            for (int x = 0; x < xDim; x++)
+            {
+                for (int y = 0; y < yDim; y++)
+                {
+                    if (pieces[x, y] == null)
+                    {
+                        SpawnNewPiece(x, y, PieceType.EMPTY);
+                    }
+                }
+            }
+
+            StartCoroutine(Fill()); // 开始填充网格的协程
+        
     }
 
     public IEnumerator Fill()
@@ -116,11 +122,12 @@ public class CustomGrid : MonoBehaviour
                 inverse = !inverse; // 切换方向标志
                 yield return new WaitForSeconds(fillTime); // 等待一段时间
             }
+
             needsRefill = ClearAllValidMatches(); // 清除所有有效的匹配，并检查是否需要重新填充
         }
     }
 
-    public bool FillStep()// 执行一步填充
+    public bool FillStep() // 执行一步填充
     {
         bool movedPiece = false; // 是否有块移动的标志
         for (int y = yDim - 2; y >= 0; y--) // 从倒数第二行开始向上遍历
@@ -156,6 +163,7 @@ public class CustomGrid : MonoBehaviour
                                 {
                                     diagX = x - diag;
                                 }
+
                                 if (diagX >= 0 && diagX < xDim) // 确保列索引有效
                                 {
                                     GamePiece diagonalPiece = pieces[diagX, y + 1]; // 获取旁边块
@@ -169,12 +177,14 @@ public class CustomGrid : MonoBehaviour
                                             {
                                                 break;
                                             }
-                                            else if (!pieceAbove.IsMovable() && pieceAbove.Type != PieceType.EMPTY) // 如果遇到不可移动的非空块，标记为false
+                                            else if (!pieceAbove.IsMovable() &&
+                                                     pieceAbove.Type != PieceType.EMPTY) // 如果遇到不可移动的非空块，标记为false
                                             {
                                                 hasPieceAbove = false;
                                                 break;
                                             }
                                         }
+
                                         if (!hasPieceAbove) // 如果上方没有不可移动的块
                                         {
                                             // 移动当前块到旁边空位，并生成新的空块
@@ -202,22 +212,21 @@ public class CustomGrid : MonoBehaviour
             {
                 // 在该位置生成新的块，并向下移动
                 Destroy(pieceBelow.gameObject);
-                GameObject newPiece = Instantiate(piecePrefabDict[PieceType.NORMAL], GetWorldPosition(x, -1), Quaternion.identity);
+                GameObject newPiece = Instantiate(piecePrefabDict[PieceType.NORMAL], GetWorldPosition(x, -1),
+                    Quaternion.identity);
                 newPiece.transform.parent = transform;
 
                 pieces[x, 0] = newPiece.GetComponent<GamePiece>();
                 pieces[x, 0].Init(x, -1, this, PieceType.NORMAL);
                 pieces[x, 0].MovableComponent.Move(x, 0, fillTime);
-                pieces[x, 0].ColorComponent.SetColor((ColorPiece.ColorType)Random.Range(0, pieces[x, 0].ColorComponent.NumColors));
+                pieces[x, 0].ColorComponent
+                    .SetColor((ColorPiece.ColorType)Random.Range(0, pieces[x, 0].ColorComponent.NumColors));
                 movedPiece = true;
             }
         }
 
         return movedPiece; // 如果有任何块移动，返回true
     }
-
-
-
 
 
     public float interval = 0.2f;
@@ -230,7 +239,7 @@ public class CustomGrid : MonoBehaviour
         // x 和 y 是游戏块在网格中的坐标
         return new Vector2(
             transform.position.x - xDim / 2.0f + x + (x * interval), // 计算游戏块的 x 坐标
-            transform.position.y + yDim / 2.0f - y - (y * interval)  // 计算游戏块的 y 坐标
+            transform.position.y + yDim / 2.0f - y - (y * interval) // 计算游戏块的 y 坐标
         );
     }
 
@@ -251,12 +260,15 @@ public class CustomGrid : MonoBehaviour
     {
         // 检查两个游戏块是否相邻
         return (piece1.X == piece2.X && (int)Mathf.Abs(piece1.Y - piece2.Y) == 1) // 检查是否在同一列且相邻
-            || (piece1.Y == piece2.Y && (int)Mathf.Abs(piece1.X - piece2.X) == 1); // 检查是否在同一行且相邻
+               || (piece1.Y == piece2.Y && (int)Mathf.Abs(piece1.X - piece2.X) == 1); // 检查是否在同一行且相邻
     }
 
     public void SwapPieces(GamePiece piece1, GamePiece piece2)
     {
-        if (gameOver) { return; }
+        if (gameOver)
+        {
+            return;
+        }
 
         // 交换两个游戏块的位置
         if (piece1.IsMovable() && piece2.IsMovable()) // 检查两个游戏块是否可移动
@@ -265,7 +277,8 @@ public class CustomGrid : MonoBehaviour
             pieces[piece2.X, piece2.Y] = piece1;
 
             if (GetMatch(piece1, piece2.X, piece2.Y) != null || GetMatch(piece2, piece1.X, piece1.Y) != null
-               || piece1.Type == PieceType.RAINBOW || piece2.Type == PieceType.RAINBOW)
+                                                             || piece1.Type == PieceType.RAINBOW ||
+                                                             piece2.Type == PieceType.RAINBOW)
             {
                 // 如果交换后有匹配的游戏块
                 int piece1X = piece1.X;
@@ -274,22 +287,25 @@ public class CustomGrid : MonoBehaviour
                 piece1.MovableComponent.Move(piece2.X, piece2.Y, fillTime); // 移动游戏块
                 piece2.MovableComponent.Move(piece1X, piece1Y, fillTime);
 
-                if (piece1.Type == PieceType.RAINBOW && piece1.IsClearable() && piece2.IsColored())//如果交换的两个块是彩虹消除块
+                if (piece1.Type == PieceType.RAINBOW && piece1.IsClearable() && piece2.IsColored()) //如果交换的两个块是彩虹消除块
                 {
                     ClearColorPiece clearColor = piece1.GetComponent<ClearColorPiece>();
                     if (clearColor)
                     {
                         clearColor.Color = piece2.ColorComponent.Color;
                     }
+
                     ClearPiece(piece1.X, piece1.Y);
                 }
-                if (piece2.Type == PieceType.RAINBOW && piece2.IsClearable() && piece1.IsColored())//如果交换的两个块是彩虹消除块
+
+                if (piece2.Type == PieceType.RAINBOW && piece2.IsClearable() && piece1.IsColored()) //如果交换的两个块是彩虹消除块
                 {
                     ClearColorPiece clearColor = piece2.GetComponent<ClearColorPiece>();
                     if (clearColor)
                     {
                         clearColor.Color = piece1.ColorComponent.Color;
                     }
+
                     ClearPiece(piece2.X, piece2.Y);
                 }
 
@@ -301,13 +317,14 @@ public class CustomGrid : MonoBehaviour
                 {
                     ClearPiece(piece1.X, piece1.Y);
                 }
+
                 if (piece2.Type == PieceType.ROW_CLEAR || piece2.Type == PieceType.COLUMN_CLEAR)
                 {
                     ClearPiece(piece2.X, piece2.Y);
                 }
 
-                pressedPiece = null;// 清空按下和进入的游戏块
-                enteredPiece = null;// 清空按下和进入的游戏块
+                pressedPiece = null; // 清空按下和进入的游戏块
+                enteredPiece = null; // 清空按下和进入的游戏块
                 StartCoroutine(Fill()); // 填充游戏块
 
                 level.OnMove();
@@ -366,14 +383,28 @@ public class CustomGrid : MonoBehaviour
                 for (int xOffset = 1; xOffset < xDim; xOffset++)
                 {
                     int x;
-                    if (dir == 0) { x = newX - xOffset; } // 向左检查
-                    else { x = newX + xOffset; } // 向右检查
-                    if (x < 0 || x >= xDim) { break; } // 超出边界则停止
+                    if (dir == 0)
+                    {
+                        x = newX - xOffset;
+                    } // 向左检查
+                    else
+                    {
+                        x = newX + xOffset;
+                    } // 向右检查
+
+                    if (x < 0 || x >= xDim)
+                    {
+                        break;
+                    } // 超出边界则停止
+
                     if (pieces[x, newY].IsColored() && pieces[x, newY].ColorComponent.Color == color)
                     {
                         horizontalPieces.Add(pieces[x, newY]); // 添加匹配的棋子
                     }
-                    else { break; } // 遇到不匹配的棋子则停止
+                    else
+                    {
+                        break;
+                    } // 遇到不匹配的棋子则停止
                 }
             }
 
@@ -381,7 +412,9 @@ public class CustomGrid : MonoBehaviour
             if (horizontalPieces.Count >= 3)
             {
                 for (int i = 0; i < horizontalPieces.Count; i++)
-                { matchingPieces.Add(horizontalPieces[i]); }
+                {
+                    matchingPieces.Add(horizontalPieces[i]);
+                }
             }
 
             // 如果水平方向匹配的棋子数大于等于3，则检查垂直方向的匹配
@@ -394,23 +427,43 @@ public class CustomGrid : MonoBehaviour
                         for (int yOffset = 1; yOffset < yDim; yOffset++)
                         {
                             int y;
-                            if (dir == 0) { y = newY - yOffset; } // 向上检查
-                            else { y = newY + yOffset; } // 向下检查
-                            if (y < 0 || y >= yDim) { break; } // 超出边界则停止
-                            if (pieces[horizontalPieces[i].X, y].IsColored() && pieces[horizontalPieces[i].X, y].ColorComponent.Color == color)
+                            if (dir == 0)
+                            {
+                                y = newY - yOffset;
+                            } // 向上检查
+                            else
+                            {
+                                y = newY + yOffset;
+                            } // 向下检查
+
+                            if (y < 0 || y >= yDim)
+                            {
+                                break;
+                            } // 超出边界则停止
+
+                            if (pieces[horizontalPieces[i].X, y].IsColored() &&
+                                pieces[horizontalPieces[i].X, y].ColorComponent.Color == color)
                             {
                                 verticalPieces.Add(pieces[horizontalPieces[i].X, y]); // 添加匹配的棋子
                             }
-                            else { break; } // 遇到不匹配的棋子则停止
+                            else
+                            {
+                                break;
+                            } // 遇到不匹配的棋子则停止
                         }
                     }
-                    if (verticalPieces.Count < 2) { verticalPieces.Clear(); } // 如果垂直方向匹配的棋子数小于2，则清空列表
+
+                    if (verticalPieces.Count < 2)
+                    {
+                        verticalPieces.Clear();
+                    } // 如果垂直方向匹配的棋子数小于2，则清空列表
                     else
                     {
                         for (int j = 0; j < verticalPieces.Count; j++)
                         {
                             matchingPieces.Add(verticalPieces[j]); // 将垂直方向匹配的棋子添加到匹配列表中
                         }
+
                         break;
                     }
                 }
@@ -434,14 +487,28 @@ public class CustomGrid : MonoBehaviour
                 for (int yOffset = 1; yOffset < yDim; yOffset++)
                 {
                     int y;
-                    if (dir == 0) { y = newY - yOffset; } // 向上检查
-                    else { y = newY + yOffset; } // 向下检查
-                    if (y < 0 || y >= yDim) { break; } // 超出边界则停止
+                    if (dir == 0)
+                    {
+                        y = newY - yOffset;
+                    } // 向上检查
+                    else
+                    {
+                        y = newY + yOffset;
+                    } // 向下检查
+
+                    if (y < 0 || y >= yDim)
+                    {
+                        break;
+                    } // 超出边界则停止
+
                     if (pieces[newX, y].IsColored() && pieces[newX, y].ColorComponent.Color == color)
                     {
                         verticalPieces.Add(pieces[newX, y]); // 添加匹配的棋子
                     }
-                    else { break; } // 遇到不匹配的棋子则停止
+                    else
+                    {
+                        break;
+                    } // 遇到不匹配的棋子则停止
                 }
             }
 
@@ -449,7 +516,9 @@ public class CustomGrid : MonoBehaviour
             if (verticalPieces.Count >= 3)
             {
                 for (int i = 0; i < verticalPieces.Count; i++)
-                { matchingPieces.Add(verticalPieces[i]); }
+                {
+                    matchingPieces.Add(verticalPieces[i]);
+                }
             }
 
             // 如果垂直方向匹配的棋子数大于等于3，则检查水平方向的匹配
@@ -462,23 +531,43 @@ public class CustomGrid : MonoBehaviour
                         for (int xOffset = 1; xOffset < yDim; xOffset++)
                         {
                             int x;
-                            if (dir == 0) { x = newX - xOffset; } // 向左检查
-                            else { x = newX + xOffset; } // 向右检查
-                            if (x < 0 || x >= xDim) { break; } // 超出边界则停止
-                            if (pieces[x, verticalPieces[i].Y].IsColored() && pieces[x, verticalPieces[i].Y].ColorComponent.Color == color)
+                            if (dir == 0)
+                            {
+                                x = newX - xOffset;
+                            } // 向左检查
+                            else
+                            {
+                                x = newX + xOffset;
+                            } // 向右检查
+
+                            if (x < 0 || x >= xDim)
+                            {
+                                break;
+                            } // 超出边界则停止
+
+                            if (pieces[x, verticalPieces[i].Y].IsColored() &&
+                                pieces[x, verticalPieces[i].Y].ColorComponent.Color == color)
                             {
                                 horizontalPieces.Add(pieces[x, verticalPieces[i].Y]); // 添加匹配的棋子
                             }
-                            else { break; } // 遇到不匹配的棋子则停止
+                            else
+                            {
+                                break;
+                            } // 遇到不匹配的棋子则停止
                         }
                     }
-                    if (horizontalPieces.Count < 2) { horizontalPieces.Clear(); } // 如果水平方向匹配的棋子数小于2，则清空列表
+
+                    if (horizontalPieces.Count < 2)
+                    {
+                        horizontalPieces.Clear();
+                    } // 如果水平方向匹配的棋子数小于2，则清空列表
                     else
                     {
                         for (int j = 0; j < horizontalPieces.Count; j++)
                         {
                             matchingPieces.Add(horizontalPieces[j]); // 将水平方向匹配的棋子添加到匹配列表中
                         }
+
                         break;
                     }
                 }
@@ -491,15 +580,15 @@ public class CustomGrid : MonoBehaviour
                 return matchingPieces;
             }
         }
+
         isStraightMatch = false;
         return null; // 如果没有匹配的棋子，则返回null
     }
 
 
-
-    public bool ClearAllValidMatches()// 清除所有有效的匹配
+    public bool ClearAllValidMatches() // 清除所有有效的匹配
     {
-        isHeroSpawned = false;// 重置英雄生成标志
+        //isHeroSpawned = false; // 重置英雄生成标志
 
         // 初始化一个布尔变量，用于标记是否需要重新填充网格
         bool needsRefill = false;
@@ -533,7 +622,8 @@ public class CustomGrid : MonoBehaviour
                             if (pressedPiece == null || enteredPiece == null)
                             {
                                 // 随机选择一种特殊块类型（行清除或列清除）
-                                specialPieceType = (PieceType)Random.Range((int)PieceType.ROW_CLEAR, (int)PieceType.COLUMN_CLEAR);
+                                specialPieceType = (PieceType)Random.Range((int)PieceType.ROW_CLEAR,
+                                    (int)PieceType.COLUMN_CLEAR);
                             }
                             // 如果按下的游戏块和进入的游戏块在同一列
                             else if (pressedPiece.X == enteredPiece.X)
@@ -559,7 +649,6 @@ public class CustomGrid : MonoBehaviour
                                 Debug.Log("Boom");
                                 specialPieceType = PieceType.BOOM;
                             }
-
                         }
 
 
@@ -581,19 +670,20 @@ public class CustomGrid : MonoBehaviour
                                 }
                             }
                         }
+
                         // 如果有特殊块类型，则生成特殊块
                         if (specialPieceType != PieceType.COUNT)
                         {
-                            Destroy(pieces[specialPieceX, specialPieceY]);// 销毁原来的块
-                            GamePiece newPiece = SpawnNewPiece(specialPieceX, specialPieceY, specialPieceType);// 生成新的特殊块
+                            Destroy(pieces[specialPieceX, specialPieceY]); // 销毁原来的块
+                            GamePiece newPiece =
+                                SpawnNewPiece(specialPieceX, specialPieceY, specialPieceType); // 生成新的特殊块
 
                             // 如果特殊块类型是行清除或列清除，则设置新方块的颜色
                             if ((specialPieceType == PieceType.ROW_CLEAR || specialPieceType == PieceType.COLUMN_CLEAR)
-                                 && newPiece.IsColored() && match[0].IsColored())
+                                && newPiece.IsColored() && match[0].IsColored())
                             {
                                 // 设置新方块的颜色为匹配的第一个方块的颜色
                                 newPiece.ColorComponent.SetColor(match[0].ColorComponent.Color);
-
                             }
 
                             else if (specialPieceType == PieceType.RAINBOW && newPiece.IsColored())
@@ -611,22 +701,21 @@ public class CustomGrid : MonoBehaviour
                 }
             }
         }
-       
+
         // 返回是否需要重新填充网格的标志
         return needsRefill;
     }
 
 
-    public HeroHome hero;
-    private bool isHeroSpawned = false;// 标志是否已经生成英雄
+    //  public HeroHome hero;
+    //  private bool isHeroSpawned = false;// 标志是否已经生成英雄
 
     // ReSharper disable Unity.PerformanceAnalysis
-    public bool ClearPiece(int x, int y)// 清除指定位置的游戏块
+    public bool ClearPiece(int x, int y) // 清除指定位置的游戏块
     {
         // 检查游戏块是否可清除且未被清除
         if (pieces[x, y].IsClearable() && !pieces[x, y].ClearableComponent.IsBeingCleared)
         {
-
             // if (!isHeroSpawned)// 如果英雄还没有生成
             // {
             //     ColorPiece.ColorType color = pieces[x, y].ColorComponent.Color;
@@ -644,13 +733,13 @@ public class CustomGrid : MonoBehaviour
 
             // 返回清除成功的标志    
             return true;
-
         }
+
         // 返回清除失败的标志
         return false;
     }
 
-    private void ClearObstacles(int x, int y)// 清除指定位置周围的障碍物
+    private void ClearObstacles(int x, int y) // 清除指定位置周围的障碍物
     {
         // 遍历指定位置周围的相邻位置
         for (int adjacentX = x - 1; adjacentX <= x + 1; adjacentX++)
@@ -668,6 +757,7 @@ public class CustomGrid : MonoBehaviour
                 }
             }
         }
+
         // 遍历指定位置周围的相邻位置
         for (int adjacentY = y - 1; adjacentY <= y + 1; adjacentY++)
         {
@@ -685,24 +775,26 @@ public class CustomGrid : MonoBehaviour
             }
         }
     }
-    public void ClearRow(int row)// 清除指定行的所有游戏块
+
+    public void ClearRow(int row) // 清除指定行的所有游戏块
     {
         // 遍历指定行的所有游戏块
         for (int x = 0; x < xDim; x++)
         {
-            ClearPiece(x, row);// 清除指定位置的游戏块
+            ClearPiece(x, row); // 清除指定位置的游戏块
         }
     }
-    public void ClearColumn(int column)// 清除指定列的所有游戏块
+
+    public void ClearColumn(int column) // 清除指定列的所有游戏块
     {
         // 遍历指定列的所有游戏块
         for (int y = 0; y < yDim; y++)
         {
-            ClearPiece(column, y);// 清除指定位置的游戏块
+            ClearPiece(column, y); // 清除指定位置的游戏块
         }
     }
 
-    public void ClearColor(ColorPiece.ColorType color)// 清除指定颜色的所有游戏块
+    public void ClearColor(ColorPiece.ColorType color) // 清除指定颜色的所有游戏块
     {
         // 遍历整个网格
         for (int x = 0; x < xDim; x++)
@@ -712,7 +804,7 @@ public class CustomGrid : MonoBehaviour
                 if (pieces[x, y].IsColored() && pieces[x, y].ColorComponent.Color == color
                     || color == ColorPiece.ColorType.ANY)
                 {
-                    ClearPiece(x, y);// 清除指定位置的游戏块
+                    ClearPiece(x, y); // 清除指定位置的游戏块
                 }
             }
         }
@@ -742,9 +834,7 @@ public class CustomGrid : MonoBehaviour
     }
 
 
-
-
-    public void GameOver()// 游戏结束
+    public void GameOver() // 游戏结束
     {
         gameOver = true;
     }
@@ -763,7 +853,7 @@ public class CustomGrid : MonoBehaviour
                 }
             }
         }
+
         return pieceOfType;
     }
 }
-

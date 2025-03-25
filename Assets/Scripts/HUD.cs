@@ -19,7 +19,7 @@ public class HUD : MonoBehaviour
     public TextMeshProUGUI targetSubText;
     public TextMeshProUGUI scoreText;
     public UnityEngine.UI.Image[] stars;
-
+   
 
 
     private int starIdx = 0;
