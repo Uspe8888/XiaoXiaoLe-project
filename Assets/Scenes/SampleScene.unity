@@ -15338,6 +15338,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 07d72b81da143704b98937ed7c602f72, type: 2}
   - {fileID: 11400000, guid: 2bceaac8f1db21c4483058554b1e280d, type: 2}
   - {fileID: 11400000, guid: 993dc27d5809cc94faf58dec1596569c, type: 2}
+  - {fileID: 11400000, guid: d2b970b5135a9794f963cad5a498abad, type: 2}
+  - {fileID: 11400000, guid: 242e018cc7aaef042b8d4646d7f1af57, type: 2}
   gridParent: {fileID: 679919984}
   itemSlotPrefab: {fileID: 7401908339783932106, guid: 7031c2e84c164ef4988513cd2724b051, type: 3}
 --- !u!1 &830372963
@@ -15412,7 +15414,7 @@ Transform:
   m_GameObject: {fileID: 1056324497}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.25, y: 1.13, z: 0.10812473}
+  m_LocalPosition: {x: 0.38, y: -0.21, z: 0.10812473}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -15450,6 +15452,7 @@ MonoBehaviour:
   moveSpeed: 1
   attackRange: 2
   target: {fileID: 0}
+  distanceToTarget: 0
   herohome: {fileID: 1506556317}
 --- !u!61 &1056324501
 BoxCollider2D:
@@ -15928,7 +15931,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -6.09, y: -1.87}
+  m_AnchoredPosition: {x: -9.77, y: -1.91}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1506556318
@@ -15957,6 +15960,8 @@ MonoBehaviour:
   - heroColor: 5
     heroPrefab: {fileID: 8608593094712636602, guid: 936d183bb5d44b74084729f934da7cfc, type: 3}
   spawnRange: 1
+  waitingArea: {fileID: 98052917}
+  heroPrefab: {fileID: 8608593094712636602, guid: 17060d91162e6634cafc4371e703b43b, type: 3}
 --- !u!1001 &1599974862
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -16120,6 +16125,18 @@ MonoBehaviour:
       - m_Target: {fileID: 380616836}
         m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
         m_MethodName: CloseInventory
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1506556318}
+        m_TargetAssemblyTypeName: HeroHome, Assembly-CSharp
+        m_MethodName: SpawnSixHero
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

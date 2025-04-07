@@ -6,43 +6,42 @@ using UnityEngine;
 /// <summary>
 /// 
 /// </summary>
-public abstract class CharacterController : MonoBehaviour
+public abstract class RoleController : MonoBehaviour
 {
     public float moveSpeed = 1f; // 移动速度
     public float attackRange = 2f; // 攻击范围
     public Transform target; // 当前目标
     protected MonsterAttack attackComponent; // 攻击组件
-    private CharacterController targetCharacter;
     private Health targetHealth;
-  
-    
+    public float distanceToTarget;
+
     protected virtual void Start()
     {
         attackComponent = GetComponent<MonsterAttack>();
         InitializeTarget();
-        targetHealth=target.GetComponent<Health>();
-     }
+        targetHealth = target.GetComponent<Health>();
+        
+    }
 
     private void Update()
     {
-       
-       if (!target)
-       {
-           InitializeTarget();
-       }
+        if (!target)
+        {
+            InitializeTarget();
+        }
+        
+        distanceToTarget = Vector3.Distance(transform.position, target.position);
 
-       float distanceToTarget = Vector3.Distance(transform.position, target.position);
+        if (distanceToTarget > attackRange)
+        {
+            MoveTowardsTarget();
+        }
+        else
+        {
+            PerformAttack();
+        }
 
-       if (distanceToTarget > attackRange)
-       {
-           MoveTowardsTarget();
-       }
-       else
-       {
-           PerformAttack();
-       }
-
-       UpdateFacingDirection();
+        UpdateFacingDirection();
     }
 
     protected abstract void InitializeTarget(); // 初始化目标

@@ -4,7 +4,7 @@ using UnityEngine;
 /// <summary>
 /// 
 /// </summary>
-public class MonsterTest : CharacterController
+public class MonsterTest : RoleController
 {
     public Transform herohome;
     
@@ -12,6 +12,7 @@ public class MonsterTest : CharacterController
     {
         ChooseRandomTarget();
     }
+
 
     private void ChooseRandomTarget()
     {
